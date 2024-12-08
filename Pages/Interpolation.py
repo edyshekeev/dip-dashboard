@@ -57,7 +57,7 @@ st.sidebar.success("Choose an algorithm")
 st.title("Image Interpolation")
 
 image = Image.open("images.jpg")
-st.image(image, caption="Original Image", use_column_width=True)
+st.image(image, caption="Original Image", use_container_width=True)
 
     # User inputs for new dimensions
 new_width = st.number_input("New width", min_value=1, value=image.size[0])
@@ -71,5 +71,5 @@ if st.button("Resize Image"):
         resized_image = nearest_neighbor_interpolation(image, new_width, new_height)
     else:
         resized_image = bilinear_interpolation(image, new_width, new_height)
-    st.image(resized_image, caption=f"Resized Image ({method})", use_column_width=True)
+    st.image(resized_image, caption=f"Resized Image ({method})", use_container_width=True)
 

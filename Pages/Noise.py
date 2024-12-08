@@ -35,7 +35,7 @@ st.sidebar.success("Choose a noise type")
 st.title("Image Noise Addition")
 
 image = Image.open("images.jpg")
-st.image(image, caption="Original Image", use_column_width=True)
+st.image(image, caption="Original Image", use_container_width=True)
 
     # Noise selection
 noise_type = st.selectbox("Choose Noise Type", ["Gaussian Noise", "Salt-Pepper Noise"])
@@ -45,11 +45,11 @@ if noise_type == "Gaussian Noise":
     var = st.slider("Variance", 0.0, 1.0, 0.01)
     if st.button("Apply Gaussian Noise"):
         noisy_image = add_gaussian_noise(image, mean, var)
-        st.image(noisy_image, caption="Image with Gaussian Noise", use_column_width=True)
+        st.image(noisy_image, caption="Image with Gaussian Noise", use_container_width=True)
     
 elif noise_type == "Salt-Pepper Noise":
     salt_prob = st.slider("Salt Probability", 0.0, 0.1, 0.01)
     pepper_prob = st.slider("Pepper Probability", 0.0, 0.1, 0.01)
     if st.button("Apply Salt-Pepper Noise"):
         noisy_image = add_salt_pepper_noise(image, salt_prob, pepper_prob)
-        st.image(noisy_image, caption="Image with Salt-Pepper Noise", use_column_width=True)
+        st.image(noisy_image, caption="Image with Salt-Pepper Noise", use_container_width=True)
