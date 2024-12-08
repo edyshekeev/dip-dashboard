@@ -8,59 +8,42 @@ class Node:
         self.right = None
 
 def calculate_frequencies(word):
-    frequencies = {}
-    for char in word:
-        if char not in frequencies:
-            freq = word.count(char)
-            frequencies[char] = freq
-            nodes.append(Node(char, freq))
+    frequencies = {char: word.count(char) for char in word}
+    nodes = [Node(char, freq) for char, freq in frequencies.items()]
+    return nodes
 
-def build_huffman_tree():
+def build_huffman_tree(nodes):
     while len(nodes) > 1:
         nodes.sort(key=lambda x: x.freq)
-        left = nodes.pop(0)
-        right = nodes.pop(0)
-        
+        left, right = nodes.pop(0), nodes.pop(0)
         merged = Node(freq=left.freq + right.freq)
-        merged.left = left
-        merged.right = right
-        
+        merged.left, merged.right = left, right
         nodes.append(merged)
-
     return nodes[0]
 
-def generate_huffman_codes(node, current_code, codes):
+def generate_huffman_codes(node, current_code="", codes={}):
     if node is None:
         return
-
-    if node.char is not None:
+    if node.char:
         codes[node.char] = current_code
-
     generate_huffman_codes(node.left, current_code + '0', codes)
     generate_huffman_codes(node.right, current_code + '1', codes)
+    return codes
 
 def huffman_encoding(word):
-    global nodes
-    nodes = []
-    calculate_frequencies(word)
-    root = build_huffman_tree()
-    codes = {}
-    generate_huffman_codes(root, '', codes)
+    nodes = calculate_frequencies(word)
+    root = build_huffman_tree(nodes)
+    codes = generate_huffman_codes(root)
     return codes
 
 def huffman_decoding(encoded_word, codes):
-    current_code = ''
-    decoded_chars = []
-
-    # Invert the codes dictionary to get the reverse mapping
     code_to_char = {v: k for k, v in codes.items()}
-
+    current_code, decoded_chars = "", []
     for bit in encoded_word:
         current_code += bit
         if current_code in code_to_char:
             decoded_chars.append(code_to_char[current_code])
             current_code = ''
-
     return ''.join(decoded_chars)
 
 st.sidebar.success("Choose an algorithm")
@@ -68,38 +51,30 @@ st.sidebar.success("Choose an algorithm")
 if "msg" not in st.session_state:
     st.session_state.msg = ""
 
-if "encoded_msg" not in st.session_state:
-    st.session_state.encoded_msg = 0
+if "encoded_msg_huffman" not in st.session_state:
+    st.session_state.encoded_msg_huffman = ""
 
 if "codes" not in st.session_state:
     st.session_state.codes = {}
 
-st.markdown("#Encoding")
+st.markdown("# Huffman Encoding")
 
-msg = st.text_input("Input a string to encode", key="msg")
+msg = st.text_input("Input a string to encode using Huffman", key="msg_huffman")
 
-encoded_msg = st.container()
+encoded_msg_huffman_container = st.container()
 
-if st.button("Encode the string"):
-    frequency_table = {}
-    for i in range(len(msg)):
-        if msg[i] not in frequency_table.keys():
-            frequency_table.update({msg[i]:1})
-        else:
-            frequency_table[msg[i]] += 1 
-    nodes = []
+if st.button("Encode with Huffman"):
     st.session_state.codes = huffman_encoding(msg)
-    st.session_state.encoded_msg = ''.join(st.session_state.codes[char] for char in msg)
+    st.session_state.encoded_msg_huffman = ''.join(st.session_state.codes[char] for char in msg)
 
-encoded_msg.text_input("Encoded string", st.session_state.encoded_msg)
+encoded_msg_huffman_container.text_input("Encoded string (Huffman)", st.session_state.encoded_msg_huffman)
 
-st.markdown("#Decoding")
+st.markdown("# Huffman Decoding")
 
-decoded_msg = st.container()
+decoded_msg_huffman_container = st.container()
+decoded_msg_huffman = ""
 
-decoded_msg_string = ""
+if st.button("Decode Huffman"):
+    decoded_msg_huffman = huffman_decoding(st.session_state.encoded_msg_huffman, st.session_state.codes)
 
-if st.button("Decode the binary string:"):
-    decoded_msg_string = huffman_decoding(st.session_state.encoded_msg, st.session_state.codes)
-
-decoded_msg.text_input("Decoded message", value=decoded_msg_string, disabled=True, key="decoded_msg")
+decoded_msg_huffman_container.text_input("Decoded message (Huffman)", value=decoded_msg_huffman, disabled=True, key="decoded_msg_huffman")
