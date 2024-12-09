@@ -68,8 +68,8 @@ st.sidebar.title("Model Selection")
 model_name = st.sidebar.selectbox("Choose a CNN Model", ["AlexNet", "LeNet", "ResNet", "DenseNet", "GoogleNet"])
 
 st.sidebar.title("Training and Testing")
-train_data_dir = st.sidebar.text_input("Training Set Directory", "training_set")
-test_data_dir = st.sidebar.text_input("Testing Set Directory", "test_set")
+train_data_dir = st.sidebar.text_input("Training Set Directory", "dataset/training_set")
+test_data_dir = st.sidebar.text_input("Testing Set Directory", "dataset/test_set")
 
 # Choose the predefined image
 image_options = [
@@ -81,7 +81,7 @@ selected_image = st.selectbox("Select the predefined image to classify:", image_
 if not os.path.exists(selected_image):
     st.error(f"Image file '{selected_image}' not found!")
 else:
-    st.image(selected_image, caption=f"Selected Image: {selected_image}", use_column_width=True)
+    st.image(selected_image, caption=f"Selected Image: {selected_image}", use_container_width=True)
 
 if st.button("Train and Test Model"):
     try:
