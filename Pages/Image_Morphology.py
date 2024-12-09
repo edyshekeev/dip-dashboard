@@ -1,44 +1,45 @@
 import streamlit as st
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image
 
 # Function to apply dilation
 def dilation(image, kernel_size):
-    h, w = image.shape
+    h, w, c = image.shape
     pad = kernel_size // 2
-    padded_image = np.pad(image, pad, mode="constant", constant_values=0)
+    padded_image = np.pad(image, ((pad, pad), (pad, pad), (0, 0)), mode="constant", constant_values=0)
     dilated_image = np.zeros_like(image)
 
-    for i in range(h):
-        for j in range(w):
-            dilated_image[i, j] = np.max(padded_image[i:i+kernel_size, j:j+kernel_size])
+    for k in range(c):  # Process each channel separately
+        for i in range(h):
+            for j in range(w):
+                dilated_image[i, j, k] = np.max(padded_image[i:i+kernel_size, j:j+kernel_size, k])
     
     return dilated_image
 
 # Function to apply erosion
 def erosion(image, kernel_size):
-    h, w = image.shape
+    h, w, c = image.shape
     pad = kernel_size // 2
-    padded_image = np.pad(image, pad, mode="constant", constant_values=255)
+    padded_image = np.pad(image, ((pad, pad), (pad, pad), (0, 0)), mode="constant", constant_values=255)
     eroded_image = np.zeros_like(image)
 
-    for i in range(h):
-        for j in range(w):
-            eroded_image[i, j] = np.min(padded_image[i:i+kernel_size, j:j+kernel_size])
+    for k in range(c):  # Process each channel separately
+        for i in range(h):
+            for j in range(w):
+                eroded_image[i, j, k] = np.min(padded_image[i:i+kernel_size, j:j+kernel_size, k])
     
     return eroded_image
 
 # Streamlit app
-st.title("Image Morphology: Dilation and Erosion")
+st.title("Image Morphology: Dilation and Erosion (RGB Image)")
 
 # Load the predefined image
 image_path = "images.jpg"
 try:
     img = Image.open(image_path)
-    img = ImageOps.grayscale(img)  # Convert to grayscale for morphology operations
     img_array = np.array(img)
 
-    st.image(img, caption="Original Image", use_conatiner_width=True)
+    st.image(img, caption="Original Image", use_container_width=True)
 
     # Select morphology operation
     morph_type = st.selectbox("Choose morphology operation", ["Dilation", "Erosion"])
